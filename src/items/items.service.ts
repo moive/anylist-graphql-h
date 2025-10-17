@@ -8,28 +8,32 @@ import { InjectRepository } from '@nestjs/typeorm';
 export class ItemsService {
   constructor(
     @InjectRepository(Item)
-    private readonly itemRepository: Repository<Item>,
+    private readonly itemsRepository: Repository<Item>,
   ) {}
 
   async create(createItemInput: CreateItemInput): Promise<Item> {
-    const newItem = this.itemRepository.create(createItemInput);
-    return await this.itemRepository.save(newItem);
+    const newItem = this.itemsRepository.create(createItemInput);
+    return await this.itemsRepository.save(newItem);
   }
 
   async findAll(): Promise<Item[]> {
-    return this.itemRepository.find();
+    return this.itemsRepository.find();
   }
 
   async findOne(id: string): Promise<Item> {
-    const item = await this.itemRepository.findOneBy({ id });
+    const item = await this.itemsRepository.findOneBy({ id });
 
     if (!item) throw new NotFoundException(`Item with ID ${id} not found`);
 
     return item;
   }
 
-  update(id: number, updateItemInput: UpdateItemInput) {
-    return `This action updates a #${id} item`;
+  async update(id: string, updateItemInput: UpdateItemInput): Promise<Item> {
+    const item = await this.itemsRepository.preload(updateItemInput);
+
+    if (!item) throw new NotFoundException(`Item with ID ${id} not found`);
+
+    return await this.itemsRepository.save(item);
   }
 
   remove(id: number) {
