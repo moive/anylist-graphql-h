@@ -10,7 +10,7 @@ export class User {
 
   @Column()
   @Field(() => String)
-  fullString: string;
+  fullName: string;
 
   @Column({ unique: true })
   @Field(() => String)
