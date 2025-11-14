@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 
 import { SignupInput } from 'src/auth/dto/inputs/signup.input';
@@ -15,7 +16,10 @@ export class UsersService {
   ) {}
   async create(signupInput: SignupInput): Promise<User> {
     try {
-      const newUser = this.userRepository.create(signupInput);
+      const newUser = this.userRepository.create({
+        ...signupInput,
+        password: bcrypt.hashSync(signupInput.password, 10),
+      });
       return await this.userRepository.save(newUser);
     } catch (error) {
       this.errorService.handleDBErrors(error);
