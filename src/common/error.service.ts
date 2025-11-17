@@ -10,8 +10,8 @@ import { IErrorsTypeORM } from './interfaces/error.interface';
 export class ErrorService {
   private logger = new Logger('UsersService');
 
-  public handleDBErrors(error: IErrorsTypeORM): never {
-    if (error.code === '23505') {
+  public handleDBErrors(error: IErrorsTypeORM | string): never {
+    if (typeof error !== 'string' && error.code === '23505') {
       throw new BadRequestException(error.detail.replace('Key ', ''));
     }
     this.logger.error(error);
