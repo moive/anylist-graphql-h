@@ -57,4 +57,9 @@ export class AuthService {
     void password;
     return rest;
   }
+
+  revalidateToken(user: User): AuthResponse {
+    const token = this.getJwtToken(user.id);
+    return { token, user };
+  }
 }
