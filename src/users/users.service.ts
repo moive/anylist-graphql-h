@@ -39,6 +39,15 @@ export class UsersService {
     }
   }
 
+  async findOneById(id: string): Promise<User> {
+    try {
+      return await this.userRepository.findOneByOrFail({ id });
+    } catch (error) {
+      console.error(error);
+      this.errorService.handleDBErrors(`${id} not found`);
+    }
+  }
+
   // update(id: number, updateUserInput: UpdateUserInput) {
   //   return `This action updates a #${id} user`;
   // }
