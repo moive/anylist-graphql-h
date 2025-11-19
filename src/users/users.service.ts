@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { ArrayContains, Repository } from 'typeorm';
+
 import { User } from './entities/user.entity';
+import { ValidRoles } from 'src/auth/enums/valid-roles.enum';
 
 import { SignupInput } from 'src/auth/dto/inputs/signup.input';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
 import { ErrorService } from 'src/common/error.service';
 
 @Injectable()
@@ -26,8 +28,20 @@ export class UsersService {
     }
   }
 
-  async findAll(): Promise<User[]> {
-    return [];
+  async findAll(roles: ValidRoles[]): Promise<User[]> {
+    // option 1
+    // return this.userRepository.find({
+    //   where: {
+    //     roles: ArrayContains(roles),
+    //   },
+    // });
+    // option 2
+    if (roles.length === 0) return this.userRepository.find();
+    return this.userRepository
+      .createQueryBuilder()
+      .andWhere('ARRAY[roles] && ARRAY[:...roles]')
+      .setParameter('roles', roles)
+      .getMany(); // similate--> this.userRepository.find();
   }
 
   async findOneByEmail(email: string): Promise<User> {
