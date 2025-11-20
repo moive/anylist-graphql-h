@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { ArrayContains, Repository } from 'typeorm';
@@ -8,6 +8,7 @@ import { ValidRoles } from 'src/auth/enums/valid-roles.enum';
 
 import { SignupInput } from 'src/auth/dto/inputs/signup.input';
 import { ErrorService } from 'src/common/error.service';
+import { UpdateUserInput } from './dto/update-user.input';
 
 @Injectable()
 export class UsersService {
@@ -68,9 +69,27 @@ export class UsersService {
     }
   }
 
-  // update(id: number, updateUserInput: UpdateUserInput) {
-  //   return `This action updates a #${id} user`;
-  // }
+  async update(
+    id: string,
+    updateUserInput: UpdateUserInput,
+    updateBy: User,
+  ): Promise<User> {
+    try {
+      const user = await this.userRepository.preload({
+        ...updateUserInput,
+        id,
+      });
+
+      if (!user) throw new NotFoundException(`User with id ${id} not found`);
+
+      user.lastUpdateBy = updateBy;
+
+      return this.userRepository.save(user);
+    } catch (error) {
+      console.log(error);
+      this.errorService.handleDBErrors(error);
+    }
+  }
 
   async block(id: string, adminUser: User): Promise<User> {
     const userToBlock = await this.findOneById(id);
