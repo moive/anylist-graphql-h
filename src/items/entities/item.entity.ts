@@ -29,7 +29,7 @@ export class Item {
 
   // stores
   // user
-  @ManyToOne(() => User, (user) => user.items, { nullable: false })
+  @ManyToOne(() => User, (user) => user.items, { nullable: false, lazy: true })
   @Index('userId-index')
   @Field(() => User)
   user: User;
