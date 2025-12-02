@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { JwtService } from '@nestjs/jwt';
     UsersModule,
     AuthModule,
     CommonModule,
+    SeedModule,
   ],
   controllers: [],
 })
