@@ -33,6 +33,9 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+
+# running seed
+execute Mutation executeSeed
 ```
 
 ## Stay in touch
